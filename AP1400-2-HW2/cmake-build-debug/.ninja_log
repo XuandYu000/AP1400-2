@@ -1,0 +1,4 @@
+# ninja log v5
+4	521	1716474241154333324	CMakeFiles/main.dir/src/crypto.cpp.o	4da1c9d8f88bdb61
+3	943	1716474241574334324	CMakeFiles/main.dir/src/server.cpp.o	6b541b2bec6a1df9
+4	1760	1716474242390336270	CMakeFiles/main.dir/src/unit_test.cpp.o	f9040d854859837e
