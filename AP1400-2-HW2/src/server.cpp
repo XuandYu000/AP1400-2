@@ -1,5 +1,7 @@
 #include "server.h"
 
+std::vector<std::string> pending_trxs;
+
 Server::Server() { this->clients = {}; }
 
 std::string add4RandomNum(std::string id) {
@@ -18,12 +20,13 @@ std::shared_ptr<Client> Server::add_client(std::string id) {
         }
     }
 
-    Client *client = new Client(id, *this);
+    Client *client = new Client(id, (const Server*) this);
     std::shared_ptr<Client> ptr(client);
     clients.insert({ptr, 5.0});
+    return ptr;
 }
 
-std::shared_ptr<Client> Server::get_client(std::string id) {
+std::shared_ptr<Client> Server::get_client(std::string id) const {
     for (const auto& [key, value] : clients) {
         if (key->get_id() == id) {
             return key;
@@ -32,7 +35,7 @@ std::shared_ptr<Client> Server::get_client(std::string id) {
     return nullptr;
 }
 
-double Server::get_wallet(std::string id) {
+double Server::get_wallet(std::string id) const {
     for (const auto& [key, value] : clients) {
         if (key->get_id() == id) {
             return value;
@@ -70,14 +73,14 @@ bool Server::parse_trx(std::string trx, std::string& sender, std::string& receiv
         throw std::runtime_error("The trx format is not valid. It should be {name1}-{name2}-{money}.");
     }
 
-    sender = std::string (trx.begin(), trx.begin() + 3);
+    sender = std::string (trx.begin(), trx.begin() + pos1);
     receiver = std::string (trx, pos1 + 1, pos2 - pos1 - 1);
     value = std::stod(std::string (trx.begin() + pos2 + 1, trx.end()));
 
     return true;
 }
 
-bool Server::add_pending_trx(std::string trx, std::string signature) {
+bool Server::add_pending_trx(std::string trx, std::string signature) const {
     std::string sender{}, receiver{};
     double value = 0;
     try {
@@ -97,7 +100,7 @@ bool Server::add_pending_trx(std::string trx, std::string signature) {
         return false;
     }
 
-    if (clients[p_sender] < value) {
+    if (get_wallet(p_sender->get_id()) < value) {
         return false;
     }
 
@@ -112,7 +115,7 @@ size_t Server::mine() {
     }
     size_t nonce = 0;
     bool flag = false;
-    while(!false) {
+    while(!flag) {
         for (auto& c_w : clients) {
             nonce = c_w.first->generate_nonce();
             if (crypto::sha256(mempool + std::to_string(nonce)).substr(0, 10).find("000") != std::string::npos) {

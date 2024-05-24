@@ -1,9 +1,9 @@
 
 #include <iostream>
+#include <vector>
 #include <gtest/gtest.h>
 #include "client.h"
 #include "server.h"
-
 
 int main(int argc, char **argv)
 {
