@@ -68,6 +68,7 @@ public:
     BST(const BST&& bst) noexcept;
     BST& operator=(const BST& bst);
     BST(std::initializer_list<int> il);
+    ~BST();
 
 private:
     Node* root;

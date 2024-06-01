@@ -371,3 +371,13 @@ BST operator++(BST& bst, int)
     ++bst;
     return oldBst;
 }
+
+BST::~BST()
+{
+    std::vector<Node*> nodes;
+    bfs([&nodes](Node*& node){nodes.push_back(node);});
+    for (auto node : nodes)
+    {
+        delete node;
+    }
+}
